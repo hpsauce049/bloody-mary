@@ -380,7 +380,8 @@
         <span class="subtitle">Our shared stash &amp; rankings</span>
       </div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap" id="headerActions">
+      <button class="btn-ghost" id="pantryBtn" style="align-self:center">🧊 What can I make?</button>
       <button class="btn-ghost" id="tagsBtn" style="align-self:center">🏷 Tags</button>
       <button class="btn-add" id="addBtn">+ Add recipe</button>
     </div>
@@ -389,6 +390,29 @@
   <div class="banner err" id="errBanner"></div>
   <div class="banner info" id="infoBanner"></div>
 
+  <!-- AUTH GATE -->
+  <div id="authView" style="display:none">
+    <div class="detail" style="max-width:440px;margin:10px auto">
+      <h2 id="authTitle" style="font-family:'Archivo Black',sans-serif;color:var(--red);text-transform:uppercase;margin:0 0 4px">Sign in</h2>
+      <p class="muted" style="margin:0 0 18px">Log in to reach your recipe box.</p>
+      <div class="field">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="auth-pass">Password</label>
+        <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" id="authSubmit">Sign in</button>
+        <button id="authToggle">Need an account?</button>
+      </div>
+      <p class="muted" id="authMsg" style="margin-top:12px"></p>
+    </div>
+  </div>
+
+  <!-- APP (everything visible only when logged in) -->
+  <div id="appView" style="display:none">
   <!-- LIST VIEW -->
   <div id="listView">
     <div class="toolbar">
@@ -407,6 +431,7 @@
 
   <!-- DETAIL VIEW -->
   <div id="detailView" style="display:none"></div>
+  </div>
 </div>
 
 <!-- RECIPE MODAL -->
@@ -446,6 +471,11 @@
     <div class="field">
       <label for="f-ingredients">Ingredients (one per line)</label>
       <textarea id="f-ingredients" rows="4" placeholder="50ml vodka&#10;100ml tomato juice&#10;Dash of Worcestershire…"></textarea>
+    </div>
+    <div class="field">
+      <label>Method (step by step)</label>
+      <div id="f-steps"></div>
+      <button class="btn-ghost" id="addStepBtn" type="button" style="margin-top:8px;font-size:12px">+ Add step</button>
     </div>
     <div class="field">
       <label for="f-notes">Notes / garnish</label>
@@ -495,6 +525,36 @@
     </div>
   </div>
 </div>
+
+<!-- PANTRY / WHAT CAN I MAKE MODAL -->
+<div class="modal-bg" id="pantryModalBg">
+  <div class="modal wide">
+    <h2>What can I make?</h2>
+    <p class="muted" style="margin-top:-8px">Tick the ingredients you have. We'll find recipes you can make, or are only 1–2 short of. Your pantry is saved to your account.</p>
+    <input type="search" id="pantrySearch" placeholder="Filter ingredients…" style="margin:14px 0" />
+    <div id="pantryPicker" style="display:flex;flex-wrap:wrap;gap:8px;max-height:200px;overflow-y:auto;padding:4px"></div>
+    <div style="border-top:3px dashed var(--line);margin:18px 0 0;padding-top:16px">
+      <div class="section-title" style="margin-top:0">Matches</div>
+      <div id="pantryResults"></div>
+    </div>
+    <div class="form-actions" style="margin-top:18px">
+      <button id="pantryDoneBtn">Done</button>
+      <button id="pantryClearBtn">Clear pantry</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT MODAL -->
+<div class="modal-bg" id="accountModalBg">
+  <div class="modal">
+    <h2>Account</h2>
+    <p class="muted" style="margin-top:-8px">Signed in as <strong id="acctEmail"></strong></p>
+    <div class="form-actions" style="margin-top:18px">
+      <button id="signOutBtn" class="btn-del">Sign out</button>
+      <button id="acctCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
 <script>
 /* ============================================================
    CONFIG — paste your Supabase values here (see SETUP.md)
@@ -506,17 +566,31 @@ const PHOTO_BUCKET = "recipe-photos";
 
 const cleanUrl = () => SUPABASE_URL.trim().replace(/\/+$/, "");
 const restBase = () => `${cleanUrl()}/rest/v1`;
+const authBase = () => `${cleanUrl()}/auth/v1`;
+
+// Auth session (persisted in localStorage so login survives refreshes)
+let session = null;
+try { session = JSON.parse(localStorage.getItem("bm_session") || "null"); } catch { session = null; }
+function setSession(s){
+  session = s;
+  if (s) localStorage.setItem("bm_session", JSON.stringify(s));
+  else localStorage.removeItem("bm_session");
+}
+function authToken(){ return session?.access_token || SUPABASE_ANON_KEY; }
+
 const headers = () => ({
   "apikey": SUPABASE_ANON_KEY,
-  "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+  "Authorization": `Bearer ${authToken()}`,
   "Content-Type": "application/json"
 });
 
 let recipes = [];
 let tags = [];                 // {id,name,color,emoji}
+let pantry = [];               // normalised ingredient names the user has
 let editingId = null;
 let formRating = 0;
 let formTagIds = [];           // tag ids selected in recipe form
+let formSteps = [];            // ordered step strings in recipe form
 let formPhotoUrl = null;       // existing/uploaded photo url
 let formPhotoFile = null;      // pending file
 let activeFilterTag = null;    // tag id to filter list by
@@ -537,11 +611,41 @@ async function api(method, table, query="", body=null, extraHeaders={}){
   const opts = { method, headers: { ...headers(), ...extraHeaders } };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(`${restBase()}/${table}${query}`, opts);
+  if (res.status === 401){ setSession(null); showAuth(); throw new Error("Please sign in."); }
   if (!res.ok){ throw new Error(`${res.status}: ${await res.text()}`); }
   if (res.status === 204) return null;
   const text = await res.text();
   return text ? JSON.parse(text) : null;
 }
+
+/* ---------- Auth ---------- */
+async function authRequest(path, email, password){
+  const res = await fetch(`${authBase()}${path}`, {
+    method: "POST",
+    headers: { "apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || data.message || "Auth failed");
+  return data;
+}
+async function signUp(email, password){
+  const data = await authRequest("/signup", email, password);
+  // If email confirmation is OFF, signup returns a session directly.
+  if (data.access_token){ setSession(data); }
+  return data;
+}
+async function signIn(email, password){
+  const data = await authRequest("/token?grant_type=password", email, password);
+  setSession(data);
+  return data;
+}
+function signOut(){
+  setSession(null);
+  pantry = [];
+  showAuth();
+}
+function currentUserEmail(){ return session?.user?.email || ""; }
 
 /* ---------- Tag colour helpers ---------- */
 function textOn(hex){
@@ -564,25 +668,73 @@ function scoreBadge(rating){
 }
 function fmtScore(v){ return (Math.round(v*2)/2).toString(); }
 
+/* ---------- Ingredient normalisation & matching ---------- */
+// Strip leading quantities/units and lowercase, so "50ml Vodka" -> "vodka"
+function normIngredient(line){
+  let s = (line||"").toLowerCase().trim();
+  s = s.replace(/^[-*•\s]+/, "");                       // leading bullets
+  const UNIT = "ml|cl|dl|l|g|kg|mg|oz|fl ?oz|tsp|tbsp|tbs|tablespoons?|teaspoons?|cups?|dash(?:es)?|splash(?:es)?|shots?|parts?|pinch(?:es)?|cubes?|slices?|wedges?|drops?|cans?|bottles?|sprigs?|cloves?|handfuls?|measures?";
+  let prev;
+  do {
+    prev = s;
+    // number (optionally glued/spaced to a unit), e.g. "50ml", "2 dashes", "1 tsp", "½ cup"
+    s = s.replace(new RegExp("^\\s*[\\d¼½¾][\\d.,/¼½¾–-]*\\s*(?:" + UNIT + ")?\\b\\.?\\s*", "i"), "");
+    // a bare unit only counts when it's a whole word followed by a space (e.g. "dash of lime")
+    s = s.replace(new RegExp("^\\s*(?:" + UNIT + ")\\s+", "i"), "");
+    s = s.replace(/^(?:of|a|an|some|the)\s+/i, "");
+  } while (s !== prev && s.length);
+  s = s.replace(/[.,;:]+$/, "").trim();
+  return s;
+}
+function recipeIngredients(r){
+  return (r.ingredients||"").split("\n").map(normIngredient).filter(Boolean);
+}
+// All distinct normalised ingredients across all recipes (for the pantry picker)
+function allIngredients(){
+  const set = new Map(); // norm -> display (first-seen original-ish)
+  recipes.forEach(r => recipeIngredients(r).forEach(n => { if(!set.has(n)) set.set(n, n); }));
+  return [...set.keys()].sort();
+}
+// Compare a recipe against the pantry; returns {missing:[], extra:[]} counts
+function matchAgainst(r, have){
+  const need = recipeIngredients(r);
+  const haveSet = new Set(have);
+  const needSet = new Set(need);
+  const missing = need.filter(n => !haveSet.has(n));   // recipe needs, you lack
+  const extra   = have.filter(n => !needSet.has(n));   // you have, recipe doesn't use
+  return { missing, extra, need };
+}
+
+/* ---------- Steps ---------- */
+function recipeSteps(r){
+  if (Array.isArray(r.steps)) return r.steps;
+  if (typeof r.steps === "string" && r.steps.trim()){
+    try { const p = JSON.parse(r.steps); if (Array.isArray(p)) return p; } catch {}
+  }
+  return [];
+}
+
 /* ---------- Load everything ---------- */
 async function loadAll(){
   if (!configured()){
     showErr("Not connected yet. Open SETUP.md and paste your Supabase URL and key into index.html.");
-    route();
     return;
   }
+  if (!session){ showAuth(); return; }
   try {
     hideErr();
-    const [rec, tg] = await Promise.all([
+    const [rec, tg, pan] = await Promise.all([
       api("GET","recipes","?select=*,recipe_tags(tag_id)"),
-      api("GET","tags","?select=*&order=name.asc")
+      api("GET","tags","?select=*&order=name.asc"),
+      api("GET","pantry","?select=ingredient")
     ]);
     recipes = (rec||[]).map(r => ({...r, tagIds: (r.recipe_tags||[]).map(x=>x.tag_id)}));
     tags = tg||[];
+    pantry = (pan||[]).map(p => p.ingredient);
+    showApp();
     route();
   } catch (e){
     showErr("Couldn't load. Check your setup, or the project may be paused — open the Supabase dashboard to resume it. (" + e.message + ")");
-    route();
   }
 }
 
@@ -638,6 +790,26 @@ function scatterStickers(){
     html += `<span style="left:${p[0]}%; top:${p[1]}%; transform:rotate(${rot}deg); opacity:${op.toFixed(2)}">${s}</span>`;
   });
   field.innerHTML = html;
+}
+
+/* ================= VIEW GATES ================= */
+function showAuth(){
+  $("authView").style.display = "";
+  $("appView").style.display = "none";
+  $("headerActions").style.display = "none";
+}
+function showApp(){
+  $("authView").style.display = "none";
+  $("appView").style.display = "";
+  $("headerActions").style.display = "flex";
+  // add an account button once
+  if (!$("accountBtn")){
+    const b = document.createElement("button");
+    b.id = "accountBtn"; b.className = "btn-ghost"; b.style.alignSelf = "center";
+    b.textContent = "👤 Account";
+    b.onclick = openAccount;
+    $("headerActions").appendChild(b);
+  }
 }
 
 /* ================= ROUTING ================= */
@@ -763,6 +935,8 @@ function showDetail(id){
   }
   const ing = (r.ingredients||"").split("\n").map(s=>s.trim()).filter(Boolean);
   const ingHTML = ing.length ? `<div class="section-title">Ingredients</div><ul>${ing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  const steps = recipeSteps(r);
+  const stepsHTML = steps.length ? `<div class="section-title">Method</div><ol style="padding-left:0;list-style:none">${steps.map((s,i)=>`<li style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start"><span class="score" style="transform:none;font-size:16px;padding:4px 12px;color:var(--red)">${i+1}</span><span style="font-weight:600;padding-top:6px">${esc(s)}</span></li>`).join("")}</ol>` : "";
   const notesHTML = r.notes ? `<div class="section-title">Notes</div><p class="notes">${esc(r.notes)}</p>` : "";
   const spice = r.spice ? `<span class="tag" style="${SPICE_STYLE[r.spice]||''}">${spiceIcon(r.spice)} ${esc(r.spice)}</span>` : "";
   const tagChips = (r.tagIds||[]).map(tid => chipHTML(tagById(tid))).join("");
@@ -799,6 +973,7 @@ function showDetail(id){
       ${(spice||tagChips)?`<div class="tags" style="margin-top:12px">${spice}${tagChips}</div>`:""}
       ${meta?`<div class="meta-row">${meta}</div>`:""}
       ${ingHTML}
+      ${stepsHTML}
       ${notesHTML}
       <div class="card-foot" style="margin-top:24px">
         <button class="btn-ghost" onclick="startEdit('${r.id}')">✎ Edit</button>
@@ -837,15 +1012,33 @@ function renderPhotoPreview(){
     <button class="btn-ghost" id="removePhoto" type="button" style="font-size:11px">remove photo ✕</button>`;
   $("removePhoto").onclick = () => { formPhotoFile=null; formPhotoUrl=null; $("f-photo").value=""; renderPhotoPreview(); };
 }
+function renderFormSteps(){
+  const box = $("f-steps");
+  if (!formSteps.length){ box.innerHTML = `<span class="muted">No steps yet — add the first one below.</span>`; return; }
+  box.innerHTML = formSteps.map((s, i) => `
+    <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px">
+      <span class="score" style="transform:none;font-size:15px;padding:6px 10px">${i+1}</span>
+      <textarea data-step="${i}" rows="2" style="flex:1" placeholder="Describe this step…">${esc(s)}</textarea>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <button class="btn-ghost" type="button" data-up="${i}" style="padding:4px 8px;font-size:11px" ${i===0?'disabled':''}>↑</button>
+        <button class="btn-ghost" type="button" data-down="${i}" style="padding:4px 8px;font-size:11px" ${i===formSteps.length-1?'disabled':''}>↓</button>
+        <button class="btn-del" type="button" data-remove="${i}" style="padding:4px 8px;font-size:11px">✕</button>
+      </div>
+    </div>`).join("");
+  box.querySelectorAll("[data-step]").forEach(t => t.oninput = e => { formSteps[+e.target.dataset.step] = e.target.value; });
+  box.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => { formSteps.splice(+b.dataset.remove,1); renderFormSteps(); });
+  box.querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const i=+b.dataset.up; [formSteps[i-1],formSteps[i]]=[formSteps[i],formSteps[i-1]]; renderFormSteps(); });
+  box.querySelectorAll("[data-down]").forEach(b => b.onclick = () => { const i=+b.dataset.down; [formSteps[i+1],formSteps[i]]=[formSteps[i],formSteps[i+1]]; renderFormSteps(); });
+}
 
 function openModal(){ $("modalBg").classList.add("show"); }
 function closeModal(){ $("modalBg").classList.remove("show"); resetForm(); }
 function resetForm(){
-  editingId = null; formRating = 0; formTagIds = []; formPhotoUrl=null; formPhotoFile=null;
+  editingId = null; formRating = 0; formTagIds = []; formSteps = []; formPhotoUrl=null; formPhotoFile=null;
   ["f-name","f-source","f-ingredients","f-notes","f-location","f-date"].forEach(i => $(i).value = "");
   $("f-spice").value = ""; $("f-photo").value = "";
   $("modalTitle").textContent = "Add recipe";
-  renderFormRating(); renderFormTags(); renderPhotoPreview();
+  renderFormRating(); renderFormTags(); renderPhotoPreview(); renderFormSteps();
 }
 function startEdit(id){
   const r = recipes.find(x => String(x.id)===String(id));
@@ -853,6 +1046,7 @@ function startEdit(id){
   editingId = id;
   formRating = r.rating||0;
   formTagIds = (r.tagIds||[]).slice();
+  formSteps = recipeSteps(r).slice();
   formPhotoUrl = r.photo_url||null; formPhotoFile=null;
   $("f-name").value = r.name||"";
   $("f-source").value = r.source||"";
@@ -862,7 +1056,7 @@ function startEdit(id){
   $("f-ingredients").value = r.ingredients||"";
   $("f-notes").value = r.notes||"";
   $("modalTitle").textContent = "Edit recipe";
-  renderFormRating(); renderFormTags(); renderPhotoPreview();
+  renderFormRating(); renderFormTags(); renderPhotoPreview(); renderFormSteps();
   openModal();
 }
 
@@ -888,6 +1082,7 @@ async function saveRecipe(){
   saveBtn.disabled = true; saveBtn.innerHTML = `<span class="spinner"></span> Saving`;
   try {
     if (formPhotoFile){ formPhotoUrl = await uploadPhoto(formPhotoFile); }
+    const cleanSteps = formSteps.map(s => (s||"").trim()).filter(Boolean);
     const data = {
       name,
       source: $("f-source").value.trim() || null,
@@ -896,6 +1091,7 @@ async function saveRecipe(){
       date: $("f-date").value || null,
       ingredients: $("f-ingredients").value.trim() || null,
       notes: $("f-notes").value.trim() || null,
+      steps: cleanSteps.length ? JSON.stringify(cleanSteps) : null,
       rating: formRating,
       photo_url: formPhotoUrl || null
     };
@@ -992,15 +1188,126 @@ async function addTag(){
   } catch(e){ showErr("Couldn't add tag. "+e.message); }
 }
 
+/* ================= PANTRY / WHAT CAN I MAKE ================= */
+let pantryFilter = "";
+function openPantry(){ renderPantry(); $("pantryModalBg").classList.add("show"); }
+function closePantry(){ $("pantryModalBg").classList.remove("show"); }
+
+function renderPantry(){
+  const all = allIngredients();
+  const haveSet = new Set(pantry);
+  const f = pantryFilter.toLowerCase();
+  const shown = all.filter(i => !f || i.includes(f));
+  const picker = $("pantryPicker");
+  if (!all.length){ picker.innerHTML = `<span class="muted">No ingredients yet — add some recipes first.</span>`; }
+  else {
+    picker.innerHTML = shown.map(i =>
+      `<span class="chip pick ${haveSet.has(i)?'on':''}" data-ing="${esc(i)}" style="background:var(--blue);color:#fff;border-color:var(--line)">${haveSet.has(i)?'✓ ':''}${esc(i)}</span>`
+    ).join("") || `<span class="muted">Nothing matches.</span>`;
+    picker.querySelectorAll("[data-ing]").forEach(c => c.onclick = () => togglePantry(c.dataset.ing));
+  }
+  renderPantryResults();
+}
+
+async function togglePantry(ing){
+  const had = pantry.includes(ing);
+  if (had) pantry = pantry.filter(x => x!==ing);
+  else pantry.push(ing);
+  renderPantry();
+  try {
+    if (had) await api("DELETE","pantry",`?ingredient=eq.${encodeURIComponent(ing)}`);
+    else await api("POST","pantry","", { ingredient: ing });
+  } catch(e){
+    showErr("Couldn't save pantry. " + e.message);
+  }
+}
+
+function renderPantryResults(){
+  const box = $("pantryResults");
+  if (!pantry.length){ box.innerHTML = `<p class="muted">Tick some ingredients to see what you can make.</p>`; return; }
+  const scored = recipes.map(r => {
+    const {missing, extra, need} = matchAgainst(r, pantry);
+    return { r, missing: missing.length, extra: extra.length, need: need.length, missingList: missing };
+  }).filter(x => x.need > 0 && x.missing <= 2)   // can make, or missing only 1–2
+    .sort((a,b) => a.missing - b.missing || a.extra - b.extra || (b.r.rating||0)-(a.r.rating||0));
+
+  if (!scored.length){ box.innerHTML = `<p class="muted">No recipes within reach yet — tick more ingredients, or you're missing more than 2 for everything.</p>`; return; }
+
+  box.innerHTML = scored.slice(0,12).map(x => {
+    const badge = x.missing===0
+      ? `<span class="meta-pill" style="background:var(--green);color:#fff">✓ You can make this!</span>`
+      : `<span class="meta-pill" style="background:var(--yellow)">Missing ${x.missing}: ${x.missingList.map(esc).join(", ")}</span>`;
+    return `<button class="related-card" style="width:100%;margin-bottom:10px" onclick="closePantry();location.hash='#/recipe/${x.r.id}'">
+      <p class="rc-name">${esc(x.r.name)}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${scoreBadge(x.r.rating)} ${badge}</div>
+    </button>`;
+  }).join("");
+}
+
+async function clearPantry(){
+  if (!pantry.length) return;
+  if (!confirm("Clear all ticked ingredients?")) return;
+  try { await api("DELETE","pantry","?ingredient=neq.__none__"); pantry=[]; renderPantry(); }
+  catch(e){ showErr("Couldn't clear pantry. "+e.message); }
+}
+
+/* ================= ACCOUNT ================= */
+function openAccount(){ $("acctEmail").textContent = currentUserEmail(); $("accountModalBg").classList.add("show"); }
+function closeAccount(){ $("accountModalBg").classList.remove("show"); }
+
+/* ================= AUTH UI ================= */
+let authMode = "signin"; // or "signup"
+function refreshAuthUI(){
+  $("authTitle").textContent = authMode==="signin" ? "Sign in" : "Create account";
+  $("authSubmit").textContent = authMode==="signin" ? "Sign in" : "Create account";
+  $("authToggle").textContent = authMode==="signin" ? "Need an account?" : "Have an account? Sign in";
+  $("auth-pass").autocomplete = authMode==="signin" ? "current-password" : "new-password";
+  $("authMsg").textContent = "";
+}
+async function submitAuth(){
+  const email = $("auth-email").value.trim();
+  const pass = $("auth-pass").value;
+  if (!email || !pass){ $("authMsg").textContent = "Enter an email and password."; return; }
+  const btn = $("authSubmit"); const orig = btn.textContent;
+  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>`;
+  try {
+    if (authMode==="signup"){
+      const data = await signUp(email, pass);
+      if (!data.access_token){
+        $("authMsg").textContent = "Account created. Check your email to confirm, then sign in.";
+        authMode = "signin"; refreshAuthUI();
+        return;
+      }
+    } else {
+      await signIn(email, pass);
+    }
+    await loadAll();
+  } catch(e){
+    $("authMsg").textContent = e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = orig; refreshAuthUI();
+  }
+}
+
 /* ================= WIRE UP ================= */
 $("addBtn").onclick = () => { resetForm(); openModal(); };
 $("tagsBtn").onclick = openTagModal;
+$("pantryBtn").onclick = openPantry;
 $("cancelBtn").onclick = closeModal;
 $("saveBtn").onclick = saveRecipe;
 $("tagDoneBtn").onclick = closeTagModal;
 $("addTagBtn").onclick = addTag;
+$("addStepBtn").onclick = () => { formSteps.push(""); renderFormSteps(); };
 $("sort").onchange = renderList;
 $("search").oninput = renderList;
+$("pantrySearch").oninput = (e) => { pantryFilter = e.target.value; renderPantry(); };
+$("pantryDoneBtn").onclick = closePantry;
+$("pantryClearBtn").onclick = clearPantry;
+$("signOutBtn").onclick = () => { closeAccount(); signOut(); };
+$("acctCloseBtn").onclick = closeAccount;
+$("authSubmit").onclick = submitAuth;
+$("authToggle").onclick = () => { authMode = authMode==="signin" ? "signup" : "signin"; refreshAuthUI(); };
+$("auth-pass").addEventListener("keydown", e => { if (e.key==="Enter") submitAuth(); });
 $("f-rating").oninput = (e) => { formRating = parseFloat(e.target.value); $("f-rating-out").textContent = fmtScore(formRating); };
 $("f-photo").onchange = (e) => { formPhotoFile = e.target.files[0]||null; renderPhotoPreview(); };
 $("newEmojiBtn").onclick = () => {
@@ -1011,8 +1318,11 @@ $("newEmojiBtn").onclick = () => {
 };
 $("modalBg").onclick = (e) => { if (e.target === $("modalBg")) closeModal(); };
 $("tagModalBg").onclick = (e) => { if (e.target === $("tagModalBg")) closeTagModal(); };
-document.addEventListener("keydown", (e) => { if (e.key==="Escape"){ closeModal(); closeTagModal(); } });
+$("pantryModalBg").onclick = (e) => { if (e.target === $("pantryModalBg")) closePantry(); };
+$("accountModalBg").onclick = (e) => { if (e.target === $("accountModalBg")) closeAccount(); };
+document.addEventListener("keydown", (e) => { if (e.key==="Escape"){ closeModal(); closeTagModal(); closePantry(); closeAccount(); } });
 
+refreshAuthUI();
 scatterStickers();
 loadAll();
 </script>
