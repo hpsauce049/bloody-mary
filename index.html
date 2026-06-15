@@ -252,6 +252,111 @@
     header.app { flex-direction: column; align-items: flex-start; }
     .btn-add { align-self: stretch; text-align: center; }
   }
+
+  /* ---------- TAG CHIPS ---------- */
+  .chip {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    border: 2.5px solid var(--line); display: inline-flex; align-items: center; gap: 4px;
+    text-transform: uppercase; cursor: pointer; line-height: 1.4;
+  }
+  .chip.pick { opacity: .45; }
+  .chip.pick.on { opacity: 1; box-shadow: 2px 2px 0 var(--ink); }
+
+  /* ---------- RATING CONTROL ---------- */
+  .rate-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .rate-num {
+    font-family: "Archivo Black", sans-serif; font-size: 26px; color: var(--red);
+    background: var(--yellow); border: 3px solid var(--line); border-radius: 10px;
+    padding: 2px 12px; box-shadow: 3px 3px 0 var(--ink); min-width: 64px; text-align: center;
+  }
+  .rate-num small { font-size: 13px; color: var(--ink); }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; height: 14px; padding: 0;
+    background: #fff; border: 3px solid var(--line); border-radius: 999px;
+    width: 100%; min-width: 160px; box-shadow: none; cursor: pointer; flex: 1;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--red); border: 3px solid var(--line); box-shadow: 2px 2px 0 var(--ink); cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--red); border: 3px solid var(--line); cursor: pointer;
+  }
+
+  /* ---------- RATING BADGE (cards) ---------- */
+  .score {
+    font-family: "Archivo Black", sans-serif; white-space: nowrap;
+    background: var(--yellow); border: 3px solid var(--line); border-radius: 12px;
+    padding: 4px 12px; box-shadow: 3px 3px 0 var(--ink); transform: rotate(3deg);
+    font-size: 20px; color: var(--red);
+  }
+  .score small { font-size: 11px; color: var(--ink); }
+
+  /* ---------- PHOTO ---------- */
+  .photo-thumb {
+    width: 100%; max-height: 360px; object-fit: cover;
+    border: 4px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+    margin: 4px 0 6px; display: block;
+  }
+  .card .photo-thumb { max-height: 200px; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .meta-pill {
+    font-weight: 800; font-size: 12px; padding: 4px 11px; border-radius: 999px;
+    border: 2.5px solid var(--line); background: #fff; display: inline-flex; gap: 5px; align-items: center;
+  }
+
+  /* ---------- DETAIL VIEW ---------- */
+  .back-btn { margin-bottom: 20px; background: var(--blue); color: #fff; transform: rotate(-1deg); }
+  .detail {
+    background: var(--paper); border: 4px solid var(--line); border-radius: 20px;
+    box-shadow: var(--shadow-lg); padding: 26px 26px 30px; position: relative;
+  }
+  .detail h1.detail-name {
+    font-family: "Archivo Black", sans-serif; color: var(--blue);
+    font-size: clamp(26px, 6vw, 40px); line-height: 1; margin: 0 0 4px;
+    text-transform: uppercase; transform: none; text-shadow: none;
+  }
+  .detail .by { font-weight: 600; opacity: .75; margin: 0 0 16px; }
+  .section-title {
+    font-family: "Archivo Black", sans-serif; text-transform: uppercase;
+    font-size: 22px; color: var(--ink); margin: 26px 0 10px;
+    display: inline-block; background: var(--yellow); padding: 2px 12px;
+    border: 3px solid var(--line); border-radius: 8px; transform: rotate(-1deg);
+  }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-top: 8px; }
+  .related-card {
+    background: #fff; border: 3px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 14px; cursor: pointer; text-align: left;
+    font-family: "Archivo", sans-serif; transition: transform .08s, box-shadow .08s;
+  }
+  .related-card:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--ink); }
+  .related-card .rc-name { font-family: "Archivo Black", sans-serif; text-transform: uppercase; color: var(--blue); font-size: 15px; margin: 0 0 6px; }
+  .related-card img { width: 100%; height: 90px; object-fit: cover; border: 2.5px solid var(--line); border-radius: 8px; margin-bottom: 8px; }
+
+  /* ---------- TAG MANAGER ---------- */
+  .tag-mgr-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; border: 3px solid var(--line); border-radius: 12px; background: #fff; }
+  .tag-mgr-row .grow { flex: 1; min-width: 120px; }
+  input[type=color] {
+    -webkit-appearance: none; appearance: none; width: 46px; height: 40px; padding: 0;
+    border: 3px solid var(--line); border-radius: 10px; background: #fff; cursor: pointer;
+  }
+  input[type=color]::-webkit-color-swatch-wrapper { padding: 3px; }
+  input[type=color]::-webkit-color-swatch { border: none; border-radius: 6px; }
+  .emoji-btn { font-size: 22px; width: 46px; height: 40px; padding: 0; background: #fff; }
+  .emoji-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;
+    border: 3px solid var(--line); border-radius: 12px; padding: 8px; background: var(--cream);
+    margin-top: 6px; max-height: 180px; overflow-y: auto;
+  }
+  .emoji-grid button { font-size: 20px; padding: 6px; box-shadow: none; border: 2px solid transparent; background: transparent; }
+  .emoji-grid button:hover { border-color: var(--line); background: #fff; transform: none; }
+  .modal.wide { max-width: 600px; }
+  .muted { font-weight: 600; opacity: .7; font-size: 14px; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -3px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -271,32 +376,42 @@
         </svg>
       </span>
       <div>
-        <h1>Bloody Mary<br>Recipe Box</h1>
+        <h1><a href="#/" style="color:inherit;text-decoration:none">Bloody Mary<br>Recipe Box</a></h1>
         <span class="subtitle">Our shared stash &amp; rankings</span>
       </div>
     </div>
-    <button class="btn-add" id="addBtn">+ Add recipe</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-ghost" id="tagsBtn" style="align-self:center">🏷 Tags</button>
+      <button class="btn-add" id="addBtn">+ Add recipe</button>
+    </div>
   </header>
 
   <div class="banner err" id="errBanner"></div>
   <div class="banner info" id="infoBanner"></div>
 
-  <div class="toolbar">
-    <label for="sort">Sort</label>
-    <select id="sort">
-      <option value="rating">Highest rated</option>
-      <option value="name">Name (A–Z)</option>
-      <option value="recent">Recently added</option>
-    </select>
-    <input type="search" class="search" id="search" placeholder="Search recipes…" />
-    <span class="count" id="count"></span>
+  <!-- LIST VIEW -->
+  <div id="listView">
+    <div class="toolbar">
+      <label for="sort">Sort</label>
+      <select id="sort">
+        <option value="rating">Highest rated</option>
+        <option value="name">Name (A–Z)</option>
+        <option value="recent">Recently added</option>
+      </select>
+      <input type="search" class="search" id="search" placeholder="Search recipes…" />
+      <span class="count" id="count"></span>
+    </div>
+    <div id="filterTags" class="tags" style="margin-bottom:20px"></div>
+    <div id="list"></div>
   </div>
 
-  <div id="list"></div>
+  <!-- DETAIL VIEW -->
+  <div id="detailView" style="display:none"></div>
 </div>
 
+<!-- RECIPE MODAL -->
 <div class="modal-bg" id="modalBg">
-  <div class="modal">
+  <div class="modal wide">
     <h2 id="modalTitle">Add recipe</h2>
     <div class="field">
       <label for="f-name">Recipe name *</label>
@@ -318,6 +433,16 @@
         </select>
       </div>
     </div>
+    <div class="row">
+      <div class="field">
+        <label for="f-date">Date</label>
+        <input type="date" id="f-date" style="width:100%" />
+      </div>
+      <div class="field">
+        <label for="f-location">Location</label>
+        <input type="text" id="f-location" placeholder="e.g. Brighton, or home" />
+      </div>
+    </div>
     <div class="field">
       <label for="f-ingredients">Ingredients (one per line)</label>
       <textarea id="f-ingredients" rows="4" placeholder="50ml vodka&#10;100ml tomato juice&#10;Dash of Worcestershire…"></textarea>
@@ -327,8 +452,20 @@
       <textarea id="f-notes" rows="2" placeholder="Garnish, tweaks, verdict…"></textarea>
     </div>
     <div class="field">
-      <label>Rating</label>
-      <div class="stars" id="f-rating"></div>
+      <label for="f-photo">Photo</label>
+      <input type="file" id="f-photo" accept="image/*" style="width:100%" />
+      <div id="photoPreviewWrap" style="margin-top:8px"></div>
+    </div>
+    <div class="field">
+      <label>Tags</label>
+      <div id="f-tags" class="tags"></div>
+    </div>
+    <div class="field">
+      <label>Rating (0–10)</label>
+      <div class="rate-wrap">
+        <input type="range" id="f-rating" min="0" max="10" step="0.5" value="0" />
+        <span class="rate-num"><span id="f-rating-out">0</span><small>/10</small></span>
+      </div>
     </div>
     <div class="form-actions">
       <button class="btn-primary" id="saveBtn">Save</button>
@@ -337,17 +474,38 @@
   </div>
 </div>
 
+<!-- TAG MANAGER MODAL -->
+<div class="modal-bg" id="tagModalBg">
+  <div class="modal wide">
+    <h2>Manage tags</h2>
+    <p class="muted" style="margin-top:-8px">Make tags with their own colour &amp; emoji. Use them on any recipe.</p>
+    <div id="tagList" style="margin:16px 0"></div>
+    <div style="border-top:3px dashed var(--line);padding-top:16px">
+      <label class="field" style="display:block">New tag</label>
+      <div class="tag-mgr-row">
+        <button class="emoji-btn" id="newEmojiBtn" type="button">🍅</button>
+        <input type="text" id="newTagName" class="grow" placeholder="Tag name e.g. Spicy" />
+        <input type="color" id="newTagColor" value="#ec1c24" />
+        <button class="btn-primary" id="addTagBtn" type="button">Add</button>
+      </div>
+      <div id="emojiPickerWrap"></div>
+    </div>
+    <div class="form-actions" style="margin-top:18px">
+      <button id="tagDoneBtn">Done</button>
+    </div>
+  </div>
+</div>
 <script>
 /* ============================================================
-   CONFIG — paste your two Supabase values here (see SETUP.md)
+   CONFIG — paste your Supabase values here (see SETUP.md)
    ============================================================ */
-const SUPABASE_URL = "https://zbwydzxeadxjlzpjntpu.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_6oLX612RoEj_T9o5keYEDw_HOrKc8fh";
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL_HERE";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+const PHOTO_BUCKET = "recipe-photos";
 /* ============================================================ */
 
-const TABLE = "recipes";
 const cleanUrl = () => SUPABASE_URL.trim().replace(/\/+$/, "");
-const apiBase = () => `${cleanUrl()}/rest/v1/${TABLE}`;
+const restBase = () => `${cleanUrl()}/rest/v1`;
 const headers = () => ({
   "apikey": SUPABASE_ANON_KEY,
   "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
@@ -355,8 +513,14 @@ const headers = () => ({
 });
 
 let recipes = [];
+let tags = [];                 // {id,name,color,emoji}
 let editingId = null;
 let formRating = 0;
+let formTagIds = [];           // tag ids selected in recipe form
+let formPhotoUrl = null;       // existing/uploaded photo url
+let formPhotoFile = null;      // pending file
+let activeFilterTag = null;    // tag id to filter list by
+let newTagEmoji = "🍅";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -369,36 +533,59 @@ function configured(){
   return SUPABASE_URL.startsWith("http") && !SUPABASE_ANON_KEY.startsWith("PASTE_");
 }
 
-async function api(method, path="", body=null, extraHeaders={}){
+async function api(method, table, query="", body=null, extraHeaders={}){
   const opts = { method, headers: { ...headers(), ...extraHeaders } };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(apiBase() + path, opts);
-  if (!res.ok){
-    const text = await res.text();
-    throw new Error(`${res.status}: ${text}`);
-  }
+  const res = await fetch(`${restBase()}/${table}${query}`, opts);
+  if (!res.ok){ throw new Error(`${res.status}: ${await res.text()}`); }
   if (res.status === 204) return null;
   const text = await res.text();
   return text ? JSON.parse(text) : null;
 }
 
-async function loadRecipes(){
+/* ---------- Tag colour helpers ---------- */
+function textOn(hex){
+  // pick black or white text for contrast against a hex bg
+  const h = (hex||"#cccccc").replace("#","");
+  const r=parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16);
+  const lum = (0.299*r + 0.587*g + 0.114*b)/255;
+  return lum > 0.6 ? "#15110d" : "#ffffff";
+}
+function tagById(id){ return tags.find(t => String(t.id)===String(id)); }
+function chipHTML(tag, extraClass="", extraAttr=""){
+  if (!tag) return "";
+  return `<span class="chip ${extraClass}" ${extraAttr} style="background:${tag.color};color:${textOn(tag.color)};border-color:var(--line)">${tag.emoji||""} ${esc(tag.name)}</span>`;
+}
+
+/* ---------- Score badge ---------- */
+function scoreBadge(rating){
+  const v = (rating==null) ? 0 : rating;
+  return `<span class="score">${fmtScore(v)}<small>/10</small></span>`;
+}
+function fmtScore(v){ return (Math.round(v*2)/2).toString(); }
+
+/* ---------- Load everything ---------- */
+async function loadAll(){
   if (!configured()){
     showErr("Not connected yet. Open SETUP.md and paste your Supabase URL and key into index.html.");
-    render();
+    route();
     return;
   }
   try {
     hideErr();
-    recipes = await api("GET", "?select=*") || [];
-    render();
+    const [rec, tg] = await Promise.all([
+      api("GET","recipes","?select=*,recipe_tags(tag_id)"),
+      api("GET","tags","?select=*&order=name.asc")
+    ]);
+    recipes = (rec||[]).map(r => ({...r, tagIds: (r.recipe_tags||[]).map(x=>x.tag_id)}));
+    tags = tg||[];
+    route();
   } catch (e){
-    showErr("Couldn't load recipes. Check your setup, or the project may be paused — open the Supabase dashboard to resume it. (" + e.message + ")");
-    render();
+    showErr("Couldn't load. Check your setup, or the project may be paused — open the Supabase dashboard to resume it. (" + e.message + ")");
+    route();
   }
 }
 
-/* ---------- Rendering ---------- */
 const SPICE_STYLE = {
   Mild:    "background:#bff0c8;color:#0f5132",
   Medium:  "background:#ffd400;color:#5c4400",
@@ -453,16 +640,36 @@ function scatterStickers(){
   field.innerHTML = html;
 }
 
-
-function starsHTML(n, id){
-  let h = "";
-  for (let i=1;i<=5;i++){
-    h += `<span class="star ${i<=n?'on':''}" data-star="${i}" ${id?`data-id="${id}"`:''} role="button" aria-label="${i} star">${i<=n?'★':'☆'}</span>`;
+/* ================= ROUTING ================= */
+function route(){
+  const hash = location.hash || "#/";
+  const m = hash.match(/^#\/recipe\/(.+)$/);
+  if (m){
+    showDetail(m[1]);
+  } else {
+    $("listView").style.display = "";
+    $("detailView").style.display = "none";
+    renderList();
   }
-  return h;
+}
+window.addEventListener("hashchange", route);
+
+/* ================= LIST VIEW ================= */
+function renderFilterTags(){
+  const box = $("filterTags");
+  if (!tags.length){ box.innerHTML = ""; return; }
+  box.innerHTML = `<span class="muted" style="align-self:center;margin-right:4px">Filter:</span>` +
+    tags.map(t => chipHTML(t, "pick " + (activeFilterTag===t.id?"on":""), `data-filter="${t.id}"`)).join("") +
+    (activeFilterTag ? `<button class="btn-ghost" id="clearFilter" style="padding:3px 10px;font-size:11px">clear ✕</button>` : "");
+  box.querySelectorAll("[data-filter]").forEach(c => c.onclick = () => {
+    activeFilterTag = (activeFilterTag===c.dataset.filter*1 || activeFilterTag===c.dataset.filter) ? null : (tagById(c.dataset.filter)?.id ?? null);
+    renderList();
+  });
+  const cf = $("clearFilter"); if (cf) cf.onclick = () => { activeFilterTag=null; renderList(); };
 }
 
-function render(){
+function renderList(){
+  renderFilterTags();
   const sort = $("sort").value;
   const q = $("search").value.trim().toLowerCase();
   let view = recipes.slice();
@@ -471,8 +678,12 @@ function render(){
     view = view.filter(r =>
       (r.name||"").toLowerCase().includes(q) ||
       (r.source||"").toLowerCase().includes(q) ||
+      (r.location||"").toLowerCase().includes(q) ||
       (r.ingredients||"").toLowerCase().includes(q)
     );
+  }
+  if (activeFilterTag != null){
+    view = view.filter(r => (r.tagIds||[]).map(String).includes(String(activeFilterTag)));
   }
   if (sort==="rating") view.sort((a,b)=>(b.rating||0)-(a.rating||0) || (b.created_at||"").localeCompare(a.created_at||""));
   else if (sort==="name") view.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
@@ -486,136 +697,324 @@ function render(){
     return;
   }
   if (view.length===0){
-    list.innerHTML = `<div class="empty"><div class="big">${GLASS_SVG}</div><p>Nothing matches “${esc(q)}”</p></div>`;
+    list.innerHTML = `<div class="empty"><div class="big">${GLASS_SVG}</div><p>Nothing matches</p></div>`;
     return;
   }
 
   list.innerHTML = view.map((r, idx) => {
-    const ing = (r.ingredients||"").split("\n").map(s=>s.trim()).filter(Boolean);
-    const ingHTML = ing.length ? `<div class="sec-label">Ingredients</div><ul>${ing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
-    const notesHTML = r.notes ? `<div class="sec-label">Notes</div><p class="notes">${esc(r.notes)}</p>` : "";
     const spice = r.spice ? `<span class="tag" style="${SPICE_STYLE[r.spice]||''}">${spiceIcon(r.spice)} ${esc(r.spice)}</span>` : "";
+    const tagChips = (r.tagIds||[]).map(id => chipHTML(tagById(id))).join("");
     const tilt = [-1.4, 0.8, -0.7, 1.3, -1.1][idx % 5];
+    const photo = r.photo_url ? `<img class="photo-thumb" src="${esc(r.photo_url)}" alt="" loading="lazy">` : "";
+    const meta = [
+      r.location ? `<span class="meta-pill">📍 ${esc(r.location)}</span>` : "",
+      r.date ? `<span class="meta-pill">📅 ${esc(formatDate(r.date))}</span>` : ""
+    ].join("");
     return `<div class="card" style="transform:rotate(${tilt}deg)">
       ${cardAccent(idx)}
       <div class="card-head">
         <div>
-          <p class="card-name">${esc(r.name||"Untitled")}</p>
+          <p class="card-name"><a href="#/recipe/${r.id}" style="color:inherit;text-decoration:none">${esc(r.name||"Untitled")}</a></p>
           ${r.source?`<p class="card-source">${esc(r.source)}</p>`:""}
         </div>
-        <div class="stars">${starsHTML(r.rating||0, r.id)}</div>
+        ${scoreBadge(r.rating)}
       </div>
-      ${spice?`<div class="tags">${spice}</div>`:""}
-      ${ingHTML}${notesHTML}
+      ${photo}
+      ${(spice||tagChips)?`<div class="tags">${spice}${tagChips}</div>`:""}
+      ${meta?`<div class="meta-row">${meta}</div>`:""}
       <div class="card-foot">
+        <button class="btn-ghost" data-open="${r.id}">👁 Open</button>
         <button class="btn-ghost" data-edit="${r.id}">✎ Edit</button>
         <button class="btn-del" data-del="${r.id}">✕ Delete</button>
       </div>
     </div>`;
   }).join("");
 
+  list.querySelectorAll("[data-open]").forEach(b => b.onclick = () => location.hash = `#/recipe/${b.dataset.open}`);
   list.querySelectorAll("[data-del]").forEach(b => b.onclick = () => delRecipe(b.dataset.del));
   list.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => startEdit(b.dataset.edit));
-  list.querySelectorAll(".card .star[data-id]").forEach(s => {
-    s.onclick = () => {
-      const r = recipes.find(x => String(x.id)===String(s.dataset.id));
-      if (!r) return;
-      const val = parseInt(s.dataset.star);
-      rate(r, r.rating===val ? val-1 : val);
-    };
-  });
 }
 
-/* ---------- Form / modal ---------- */
-function renderFormStars(){
-  $("f-rating").innerHTML = starsHTML(formRating);
-  $("f-rating").querySelectorAll(".star").forEach(s => {
-    s.onclick = () => { formRating = parseInt(s.dataset.star); renderFormStars(); };
+function formatDate(d){
+  if (!d) return "";
+  try { return new Date(d+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}); }
+  catch { return d; }
+}
+
+/* ================= DETAIL VIEW ================= */
+function relatedFor(r){
+  const myTags = new Set((r.tagIds||[]).map(String));
+  if (!myTags.size) return [];
+  const pool = recipes.filter(o => String(o.id)!==String(r.id) && (o.tagIds||[]).some(t => myTags.has(String(t))));
+  // shuffle (Fisher–Yates) and take 3
+  for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  return pool.slice(0,3);
+}
+
+function showDetail(id){
+  const r = recipes.find(x => String(x.id)===String(id));
+  $("listView").style.display = "none";
+  const view = $("detailView");
+  view.style.display = "";
+  if (!r){
+    view.innerHTML = `<button class="back-btn" onclick="location.hash='#/'">← Back</button>
+      <div class="empty"><div class="big">${GLASS_SVG}</div><p>Recipe not found</p></div>`;
+    return;
+  }
+  const ing = (r.ingredients||"").split("\n").map(s=>s.trim()).filter(Boolean);
+  const ingHTML = ing.length ? `<div class="section-title">Ingredients</div><ul>${ing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  const notesHTML = r.notes ? `<div class="section-title">Notes</div><p class="notes">${esc(r.notes)}</p>` : "";
+  const spice = r.spice ? `<span class="tag" style="${SPICE_STYLE[r.spice]||''}">${spiceIcon(r.spice)} ${esc(r.spice)}</span>` : "";
+  const tagChips = (r.tagIds||[]).map(tid => chipHTML(tagById(tid))).join("");
+  const photo = r.photo_url ? `<img class="photo-thumb" src="${esc(r.photo_url)}" alt="">` : "";
+  const meta = [
+    r.location ? `<span class="meta-pill">📍 ${esc(r.location)}</span>` : "",
+    r.date ? `<span class="meta-pill">📅 ${esc(formatDate(r.date))}</span>` : ""
+  ].join("");
+
+  const related = relatedFor(r);
+  const relHTML = related.length ? `
+    <div class="section-title">You might also like</div>
+    <div class="related-grid">
+      ${related.map(rr => `
+        <button class="related-card" onclick="location.hash='#/recipe/${rr.id}'">
+          ${rr.photo_url?`<img src="${esc(rr.photo_url)}" alt="">`:""}
+          <p class="rc-name">${esc(rr.name)}</p>
+          <div>${scoreBadge(rr.rating)}</div>
+        </button>`).join("")}
+    </div>` :
+    `<div class="section-title">You might also like</div><p class="muted">Add some shared tags to see related recipes.</p>`;
+
+  view.innerHTML = `
+    <button class="back-btn" onclick="location.hash='#/'">← All recipes</button>
+    <div class="detail">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1 class="detail-name">${esc(r.name||"Untitled")}</h1>
+          ${r.source?`<p class="by">made by ${esc(r.source)}</p>`:""}
+        </div>
+        ${scoreBadge(r.rating)}
+      </div>
+      ${photo}
+      ${(spice||tagChips)?`<div class="tags" style="margin-top:12px">${spice}${tagChips}</div>`:""}
+      ${meta?`<div class="meta-row">${meta}</div>`:""}
+      ${ingHTML}
+      ${notesHTML}
+      <div class="card-foot" style="margin-top:24px">
+        <button class="btn-ghost" onclick="startEdit('${r.id}')">✎ Edit</button>
+        <button class="btn-del" onclick="delRecipe('${r.id}')">✕ Delete</button>
+      </div>
+      ${relHTML}
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ================= RECIPE FORM ================= */
+function renderFormRating(){
+  $("f-rating").value = formRating;
+  $("f-rating-out").textContent = fmtScore(formRating);
+}
+function renderFormTags(){
+  const box = $("f-tags");
+  if (!tags.length){ box.innerHTML = `<span class="muted">No tags yet — add some via the 🏷 Tags button.</span>`; return; }
+  box.innerHTML = tags.map(t => {
+    const on = formTagIds.map(String).includes(String(t.id));
+    return chipHTML(t, "pick " + (on?"on":""), `data-tag="${t.id}"`);
+  }).join("");
+  box.querySelectorAll("[data-tag]").forEach(c => c.onclick = () => {
+    const id = c.dataset.tag;
+    const sid = tags.find(t=>String(t.id)===String(id)).id;
+    if (formTagIds.map(String).includes(String(sid))) formTagIds = formTagIds.filter(x=>String(x)!==String(sid));
+    else formTagIds.push(sid);
+    renderFormTags();
   });
 }
+function renderPhotoPreview(){
+  const wrap = $("photoPreviewWrap");
+  const url = formPhotoFile ? URL.createObjectURL(formPhotoFile) : formPhotoUrl;
+  if (!url){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `<img class="photo-thumb" src="${url}" alt="" style="max-height:160px">
+    <button class="btn-ghost" id="removePhoto" type="button" style="font-size:11px">remove photo ✕</button>`;
+  $("removePhoto").onclick = () => { formPhotoFile=null; formPhotoUrl=null; $("f-photo").value=""; renderPhotoPreview(); };
+}
+
 function openModal(){ $("modalBg").classList.add("show"); }
 function closeModal(){ $("modalBg").classList.remove("show"); resetForm(); }
 function resetForm(){
-  editingId = null; formRating = 0;
-  ["f-name","f-source","f-ingredients","f-notes"].forEach(i => $(i).value = "");
-  $("f-spice").value = "";
+  editingId = null; formRating = 0; formTagIds = []; formPhotoUrl=null; formPhotoFile=null;
+  ["f-name","f-source","f-ingredients","f-notes","f-location","f-date"].forEach(i => $(i).value = "");
+  $("f-spice").value = ""; $("f-photo").value = "";
   $("modalTitle").textContent = "Add recipe";
-  renderFormStars();
+  renderFormRating(); renderFormTags(); renderPhotoPreview();
 }
 function startEdit(id){
   const r = recipes.find(x => String(x.id)===String(id));
   if (!r) return;
-  editingId = id; formRating = r.rating||0;
+  editingId = id;
+  formRating = r.rating||0;
+  formTagIds = (r.tagIds||[]).slice();
+  formPhotoUrl = r.photo_url||null; formPhotoFile=null;
   $("f-name").value = r.name||"";
   $("f-source").value = r.source||"";
   $("f-spice").value = r.spice||"";
+  $("f-location").value = r.location||"";
+  $("f-date").value = r.date||"";
   $("f-ingredients").value = r.ingredients||"";
   $("f-notes").value = r.notes||"";
   $("modalTitle").textContent = "Edit recipe";
-  renderFormStars(); openModal();
+  renderFormRating(); renderFormTags(); renderPhotoPreview();
+  openModal();
 }
 
-/* ---------- CRUD ---------- */
+/* ---------- Photo upload to Supabase Storage ---------- */
+async function uploadPhoto(file){
+  const ext = (file.name.split(".").pop()||"jpg").toLowerCase();
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const res = await fetch(`${cleanUrl()}/storage/v1/object/${PHOTO_BUCKET}/${path}`, {
+    method: "POST",
+    headers: { "apikey": SUPABASE_ANON_KEY, "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": file.type || "image/jpeg" },
+    body: file
+  });
+  if (!res.ok) throw new Error(`Photo upload failed: ${res.status} ${await res.text()}`);
+  return `${cleanUrl()}/storage/v1/object/public/${PHOTO_BUCKET}/${path}`;
+}
+
+/* ---------- Save recipe + its tag links ---------- */
 async function saveRecipe(){
   const name = $("f-name").value.trim();
   if (!name){ $("f-name").focus(); return; }
-  const data = {
-    name,
-    source: $("f-source").value.trim(),
-    spice: $("f-spice").value || null,
-    ingredients: $("f-ingredients").value.trim(),
-    notes: $("f-notes").value.trim(),
-    rating: formRating
-  };
+  const saveBtn = $("saveBtn");
+  const orig = saveBtn.innerHTML;
+  saveBtn.disabled = true; saveBtn.innerHTML = `<span class="spinner"></span> Saving`;
   try {
+    if (formPhotoFile){ formPhotoUrl = await uploadPhoto(formPhotoFile); }
+    const data = {
+      name,
+      source: $("f-source").value.trim() || null,
+      spice: $("f-spice").value || null,
+      location: $("f-location").value.trim() || null,
+      date: $("f-date").value || null,
+      ingredients: $("f-ingredients").value.trim() || null,
+      notes: $("f-notes").value.trim() || null,
+      rating: formRating,
+      photo_url: formPhotoUrl || null
+    };
+    let recId = editingId;
     if (editingId){
-      await api("PATCH", `?id=eq.${editingId}`, data);
-      const r = recipes.find(x => String(x.id)===String(editingId));
-      if (r) Object.assign(r, data);
+      await api("PATCH","recipes",`?id=eq.${editingId}`, data);
     } else {
-      const created = await api("POST", "", data, { "Prefer": "return=representation" });
-      if (created && created[0]) recipes.push(created[0]);
+      const created = await api("POST","recipes","", data, { "Prefer": "return=representation" });
+      recId = created[0].id;
     }
-    closeModal(); render(); showInfo("Saved.");
+    // sync tag links: delete existing, insert chosen
+    await api("DELETE","recipe_tags",`?recipe_id=eq.${recId}`);
+    if (formTagIds.length){
+      await api("POST","recipe_tags","", formTagIds.map(tid => ({recipe_id: recId, tag_id: tid})));
+    }
+    closeModal();
+    await loadAll();
+    showInfo("Saved.");
   } catch (e){
     showErr("Couldn't save. " + e.message);
+  } finally {
+    saveBtn.disabled = false; saveBtn.innerHTML = orig;
   }
 }
 
 async function delRecipe(id){
   if (!confirm("Delete this recipe?")) return;
   try {
-    await api("DELETE", `?id=eq.${id}`);
-    recipes = recipes.filter(r => String(r.id)!==String(id));
-    render(); showInfo("Deleted.");
+    await api("DELETE","recipe_tags",`?recipe_id=eq.${id}`);
+    await api("DELETE","recipes",`?id=eq.${id}`);
+    if ((location.hash||"").includes("/recipe/")) location.hash = "#/";
+    await loadAll();
+    showInfo("Deleted.");
   } catch (e){
     showErr("Couldn't delete. " + e.message);
   }
 }
 
-async function rate(r, val){
-  const prev = r.rating;
-  r.rating = val; render();
-  try {
-    await api("PATCH", `?id=eq.${r.id}`, { rating: val });
-  } catch (e){
-    r.rating = prev; render();
-    showErr("Couldn't update rating. " + e.message);
-  }
+/* ================= TAG MANAGER ================= */
+function openTagModal(){ renderTagList(); $("tagModalBg").classList.add("show"); }
+function closeTagModal(){ $("tagModalBg").classList.remove("show"); $("emojiPickerWrap").innerHTML=""; }
+
+function renderTagList(){
+  const box = $("tagList");
+  if (!tags.length){ box.innerHTML = `<p class="muted">No tags yet.</p>`; return; }
+  box.innerHTML = tags.map(t => `
+    <div class="tag-mgr-row" data-row="${t.id}">
+      <button class="emoji-btn" type="button" data-emoji-edit="${t.id}">${t.emoji||"🏷"}</button>
+      <input type="text" class="grow" value="${esc(t.name)}" data-name="${t.id}" />
+      <input type="color" value="${t.color||'#cccccc'}" data-color="${t.id}" />
+      <button class="btn-ghost" type="button" data-save-tag="${t.id}">Save</button>
+      <button class="btn-del" type="button" data-del-tag="${t.id}">✕</button>
+    </div>
+    <div data-emojiwrap="${t.id}"></div>
+  `).join("");
+
+  box.querySelectorAll("[data-save-tag]").forEach(b => b.onclick = async () => {
+    const id = b.dataset.saveTag;
+    const name = box.querySelector(`[data-name="${id}"]`).value.trim();
+    const color = box.querySelector(`[data-color="${id}"]`).value;
+    const emoji = box.querySelector(`[data-emoji-edit="${id}"]`).textContent.trim();
+    if (!name) return;
+    try { await api("PATCH","tags",`?id=eq.${id}`,{name,color,emoji}); await loadAll(); renderTagList(); showInfo("Tag updated."); }
+    catch(e){ showErr("Couldn't update tag. "+e.message); }
+  });
+  box.querySelectorAll("[data-del-tag]").forEach(b => b.onclick = async () => {
+    const id = b.dataset.delTag;
+    if (!confirm("Delete this tag? It will be removed from all recipes.")) return;
+    try { await api("DELETE","recipe_tags",`?tag_id=eq.${id}`); await api("DELETE","tags",`?id=eq.${id}`); await loadAll(); renderTagList(); showInfo("Tag deleted."); }
+    catch(e){ showErr("Couldn't delete tag. "+e.message); }
+  });
+  box.querySelectorAll("[data-emoji-edit]").forEach(b => b.onclick = () => {
+    const id = b.dataset.emojiEdit;
+    const wrap = box.querySelector(`[data-emojiwrap="${id}"]`);
+    if (wrap.innerHTML){ wrap.innerHTML=""; return; }
+    wrap.innerHTML = emojiGridHTML();
+    wrap.querySelectorAll("button").forEach(eb => eb.onclick = () => { b.textContent = eb.textContent; wrap.innerHTML=""; });
+  });
 }
 
-/* ---------- Wire up ---------- */
+const EMOJI_SET = ["🍅","🌶","🥃","🍸","🍹","🥂","🧊","🍋","🧂","🥓","🌿","🥬","🫒","🧄","🧅","🔥","💀","⭐","💚","💙","❤️","💛","🧪","🏆","👑","🎉","🌊","🥤","🍾","🫑","🦞","🐟","🥚","🫙","🍶","✨"];
+function emojiGridHTML(){
+  return `<div class="emoji-grid">${EMOJI_SET.map(e=>`<button type="button">${e}</button>`).join("")}</div>`;
+}
+
+async function addTag(){
+  const name = $("newTagName").value.trim();
+  if (!name){ $("newTagName").focus(); return; }
+  const color = $("newTagColor").value;
+  try {
+    await api("POST","tags","", {name, color, emoji: newTagEmoji}, {"Prefer":"return=representation"});
+    $("newTagName").value=""; newTagEmoji="🍅"; $("newEmojiBtn").textContent="🍅"; $("emojiPickerWrap").innerHTML="";
+    await loadAll(); renderTagList(); showInfo("Tag added.");
+  } catch(e){ showErr("Couldn't add tag. "+e.message); }
+}
+
+/* ================= WIRE UP ================= */
 $("addBtn").onclick = () => { resetForm(); openModal(); };
+$("tagsBtn").onclick = openTagModal;
 $("cancelBtn").onclick = closeModal;
 $("saveBtn").onclick = saveRecipe;
-$("sort").onchange = render;
-$("search").oninput = render;
+$("tagDoneBtn").onclick = closeTagModal;
+$("addTagBtn").onclick = addTag;
+$("sort").onchange = renderList;
+$("search").oninput = renderList;
+$("f-rating").oninput = (e) => { formRating = parseFloat(e.target.value); $("f-rating-out").textContent = fmtScore(formRating); };
+$("f-photo").onchange = (e) => { formPhotoFile = e.target.files[0]||null; renderPhotoPreview(); };
+$("newEmojiBtn").onclick = () => {
+  const wrap = $("emojiPickerWrap");
+  if (wrap.innerHTML){ wrap.innerHTML=""; return; }
+  wrap.innerHTML = emojiGridHTML();
+  wrap.querySelectorAll("button").forEach(eb => eb.onclick = () => { newTagEmoji = eb.textContent; $("newEmojiBtn").textContent = newTagEmoji; wrap.innerHTML=""; });
+};
 $("modalBg").onclick = (e) => { if (e.target === $("modalBg")) closeModal(); };
-document.addEventListener("keydown", (e) => { if (e.key==="Escape") closeModal(); });
+$("tagModalBg").onclick = (e) => { if (e.target === $("tagModalBg")) closeTagModal(); };
+document.addEventListener("keydown", (e) => { if (e.key==="Escape"){ closeModal(); closeTagModal(); } });
 
-renderFormStars();
 scatterStickers();
-loadRecipes();
+loadAll();
 </script>
 </body>
 </html>
