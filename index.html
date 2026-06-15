@@ -4,152 +4,285 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bloody Mary Recipe Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fbf7f4;
-    --surface: #ffffff;
-    --ink: #2b1a14;
-    --muted: #7a6a62;
-    --faint: #a89a92;
-    --line: #ece3dc;
-    --tomato: #c0341d;
-    --tomato-dark: #95271a;
-    --celery: #4a7c3f;
-    --amber: #d98324;
-    --radius: 14px;
-    --shadow: 0 1px 3px rgba(60,30,20,.07), 0 8px 24px rgba(60,30,20,.05);
+    --red:    #ec1c24;
+    --red-dk: #b4121a;
+    --blue:   #1d4ed8;
+    --blue-dk:#163fab;
+    --yellow: #ffd400;
+    --green:  #16a34a;
+    --pink:   #ff5ca8;
+    --orange: #ff7a18;
+    --cream:  #fff8e7;
+    --ink:    #15110d;
+    --paper:  #fffdf6;
+    --line:   #15110d;
+    --shadow: 5px 5px 0 var(--ink);
+    --shadow-lg: 8px 8px 0 var(--ink);
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
+    font-family: "Archivo", system-ui, sans-serif;
     color: var(--ink);
-    line-height: 1.55;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    background-color: var(--cream);
+    background-image:
+      radial-gradient(var(--red) 1.5px, transparent 1.6px),
+      radial-gradient(var(--blue) 1.5px, transparent 1.6px),
+      linear-gradient(rgba(21,17,13,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(21,17,13,.05) 1px, transparent 1px);
+    background-size: 64px 64px, 64px 64px, 26px 26px, 26px 26px;
+    background-position: 0 0, 32px 32px, 0 0, 0 0;
   }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 20px 80px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .wobble { animation: wob 6s ease-in-out infinite; }
+    @keyframes wob { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 24px 18px 100px; position: relative; }
+
+  .sticker-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .sticker-field span { position: absolute; display: block; }
+  .sticker-field svg { display: block; }
+  .wrap > *:not(.sticker-field) { position: relative; z-index: 1; }
 
   header.app {
+    background: var(--yellow);
+    border: 4px solid var(--line);
+    border-radius: 22px;
+    box-shadow: var(--shadow-lg);
+    padding: 26px 24px 28px;
+    margin-bottom: 30px;
+    position: relative;
     display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; margin-bottom: 8px; flex-wrap: wrap;
+    gap: 18px; flex-wrap: wrap;
   }
-  .title { display: flex; align-items: center; gap: 12px; }
-  .title .glass { font-size: 30px; line-height: 1; }
-  h1 { font-size: 25px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
-  .subtitle { color: var(--muted); font-size: 14px; margin: 2px 0 0; }
+  .title { display: flex; align-items: center; gap: 16px; }
+  .title .glass {
+    width: 64px; height: 64px; flex-shrink: 0;
+    background: var(--red); border: 4px solid var(--line); border-radius: 50%;
+    box-shadow: 3px 3px 0 var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    transform: rotate(-8deg);
+  }
+  .title .glass svg { width: 38px; height: 38px; }
+  h1 {
+    font-family: "Archivo Black", sans-serif;
+    font-size: clamp(30px, 7vw, 52px);
+    margin: 0; line-height: .92; letter-spacing: -.02em;
+    color: var(--red);
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--line);
+    transform: rotate(-1.5deg);
+  }
+  .subtitle {
+    display: inline-block;
+    font-weight: 800; font-size: 13px; letter-spacing: .03em;
+    margin: 8px 0 0; padding: 4px 12px;
+    background: var(--blue); color: #fff;
+    border: 3px solid var(--line); border-radius: 999px;
+    transform: rotate(1.5deg);
+    text-transform: uppercase;
+  }
 
   button {
-    font: inherit; cursor: pointer; border-radius: 10px;
-    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-    padding: 9px 14px; transition: all .12s ease;
+    font-family: "Archivo Black", sans-serif;
+    font-size: 14px; cursor: pointer;
+    border: 3px solid var(--line); border-radius: 12px;
+    background: #fff; color: var(--ink);
+    padding: 11px 16px; text-transform: uppercase; letter-spacing: .02em;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .08s ease, box-shadow .08s ease;
   }
-  button:hover { border-color: #d8ccc3; background: #fff; }
-  button:active { transform: scale(.98); }
-  .btn-primary {
-    background: var(--tomato); color: #fff; border-color: var(--tomato);
-    font-weight: 600;
+  button:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--ink); }
+  button:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--ink); }
+  button:focus-visible { outline: 3px dashed var(--blue); outline-offset: 3px; }
+  .btn-primary { background: var(--red); color: #fff; }
+  .btn-add {
+    background: var(--green); color: #fff; font-size: 15px;
+    padding: 13px 20px; transform: rotate(-2deg);
   }
-  .btn-primary:hover { background: var(--tomato-dark); border-color: var(--tomato-dark); }
-  .btn-ghost { background: transparent; border-color: transparent; color: var(--muted); padding: 6px 8px; }
-  .btn-ghost:hover { background: #f0e8e2; color: var(--ink); }
-  .btn-danger-text { color: var(--tomato); }
+  .btn-add:hover { transform: rotate(-2deg) translate(-1px,-1px); }
+  .btn-ghost {
+    background: #fff; box-shadow: 3px 3px 0 var(--ink);
+    padding: 8px 13px; font-size: 12px;
+  }
+  .btn-del { background: var(--red); color: #fff; box-shadow: 3px 3px 0 var(--ink); padding: 8px 13px; font-size: 12px; }
 
   .toolbar {
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-    margin: 22px 0 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin: 0 0 26px; padding: 14px 16px;
+    background: var(--pink);
+    border: 4px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow);
   }
-  .toolbar label { font-size: 13px; color: var(--muted); }
+  .toolbar label {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 12px; text-transform: uppercase; color: #fff;
+    text-shadow: 1.5px 1.5px 0 var(--line);
+    margin-right: 2px;
+  }
   select, input[type=text], input[type=search], textarea {
-    font: inherit; color: var(--ink); background: var(--surface);
-    border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px;
+    font-family: "Archivo", sans-serif; font-weight: 600;
+    color: var(--ink); background: #fff;
+    border: 3px solid var(--line); border-radius: 10px; padding: 9px 12px;
     width: 100%;
   }
-  select { width: auto; padding-right: 28px; }
+  select { width: auto; padding-right: 30px; cursor: pointer; }
   input:focus, select:focus, textarea:focus {
-    outline: none; border-color: var(--tomato); box-shadow: 0 0 0 3px rgba(192,52,29,.12);
+    outline: none; box-shadow: 3px 3px 0 var(--blue);
   }
-  .count { margin-left: auto; color: var(--faint); font-size: 13px; }
-  .search { flex: 1; min-width: 160px; max-width: 280px; }
+  .count {
+    margin-left: auto;
+    font-family: "Archivo Black", sans-serif; font-size: 13px;
+    color: #fff; background: var(--ink); padding: 5px 12px; border-radius: 999px;
+    border: 2px solid var(--line);
+  }
+  .search { flex: 1; min-width: 150px; max-width: 260px; }
 
   .card {
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 18px 20px; margin-bottom: 14px;
+    background: var(--paper);
+    border: 4px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow-lg);
+    padding: 20px 22px; margin-bottom: 26px;
+    position: relative;
+  }
+  .card-accent { position: absolute; top: -18px; right: -14px; width: 54px; height: 54px; transform: rotate(12deg); overflow: visible; }
+  .card::before {
+    content: ""; position: absolute; top: -12px; left: 24px;
+    width: 64px; height: 22px; background: rgba(255,255,255,.55);
+    border: 2px solid rgba(21,17,13,.35); border-radius: 3px;
+    transform: rotate(-4deg);
   }
   .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
-  .card-name { font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
-  .card-source { color: var(--muted); font-size: 13.5px; margin: 2px 0 0; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
-  .tag {
-    font-size: 12px; padding: 3px 10px; border-radius: 999px; font-weight: 600;
-    display: inline-flex; align-items: center; gap: 4px;
+  .card-name {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 23px; margin: 0; line-height: 1.02; letter-spacing: -.01em;
+    color: var(--blue); text-transform: uppercase;
   }
-  .sec-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); margin: 14px 0 4px; font-weight: 700; }
-  .card ul { margin: 0; padding-left: 18px; font-size: 14.5px; }
-  .card ul li { margin: 2px 0; }
-  .card .notes { font-size: 14.5px; margin: 0; white-space: pre-wrap; }
-  .card-foot { display: flex; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .card-source { font-weight: 600; font-size: 13.5px; margin: 4px 0 0; color: var(--ink); opacity: .75; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .tag {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 12px; padding: 4px 12px; border-radius: 999px;
+    border: 2.5px solid var(--line);
+    display: inline-flex; align-items: center; gap: 5px;
+    text-transform: uppercase;
+  }
+  .sec-label {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: #fff; background: var(--green);
+    display: inline-block; padding: 2px 10px; border: 2px solid var(--line);
+    border-radius: 6px; margin: 16px 0 8px; transform: rotate(-1deg);
+  }
+  .card ul { margin: 0; padding-left: 22px; font-size: 15px; font-weight: 600; }
+  .card ul li { margin: 3px 0; }
+  .card ul li::marker { color: var(--red); }
+  .card .notes { font-size: 15px; font-weight: 600; margin: 0; white-space: pre-wrap; }
+  .card-foot {
+    display: flex; gap: 10px; margin-top: 18px; padding-top: 14px;
+    border-top: 3px dashed var(--line);
+  }
 
-  .stars { white-space: nowrap; display: inline-flex; gap: 2px; }
-  .star { cursor: pointer; font-size: 21px; line-height: 1; color: #dcd0c8; user-select: none; transition: transform .08s; }
-  .star.on { color: var(--amber); }
-  .star:hover { transform: scale(1.15); }
+  .stars { white-space: nowrap; display: inline-flex; gap: 3px; }
+  .star {
+    cursor: pointer; font-size: 25px; line-height: 1; user-select: none;
+    color: #fff; -webkit-text-stroke: 2px var(--line); transition: transform .1s;
+  }
+  .star.on { color: var(--yellow); }
+  .star:hover { transform: scale(1.25) rotate(-8deg); }
 
-  .field { margin-bottom: 13px; }
-  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
-  .row { display: flex; gap: 12px; }
+  .field { margin-bottom: 15px; }
+  .field label {
+    display: block; font-family: "Archivo Black", sans-serif;
+    font-size: 12px; text-transform: uppercase; margin-bottom: 6px; color: var(--ink);
+  }
+  .row { display: flex; gap: 14px; }
   .row > .field { flex: 1; }
-  .form-actions { display: flex; gap: 8px; margin-top: 6px; }
+  .form-actions { display: flex; gap: 10px; margin-top: 8px; }
 
-  .empty { text-align: center; color: var(--faint); padding: 60px 20px; }
-  .empty .big { font-size: 44px; }
-  .empty p { margin: 12px 0 0; }
+  .empty {
+    text-align: center; padding: 50px 24px;
+    background: var(--paper); border: 4px dashed var(--line);
+    border-radius: 18px;
+  }
+  .empty .big { width: 84px; height: 84px; margin: 0 auto 6px; }
+  .empty .big svg { width: 100%; height: 100%; }
+  .empty p {
+    margin: 14px 0 0; font-family: "Archivo Black", sans-serif;
+    font-size: 18px; text-transform: uppercase; color: var(--blue);
+  }
 
   .banner {
-    border-radius: 10px; padding: 11px 14px; font-size: 13.5px; margin-bottom: 16px;
-    display: none;
+    border: 3px solid var(--line); border-radius: 12px;
+    padding: 12px 16px; font-weight: 600; font-size: 14px; margin-bottom: 18px;
+    box-shadow: 4px 4px 0 var(--ink); display: none;
   }
   .banner.show { display: block; }
-  .banner.err { background: #fdecea; color: #a3261d; border: 1px solid #f5c6c0; }
-  .banner.info { background: #eef5ea; color: #3b6d11; border: 1px solid #d4e5c6; }
+  .banner.err { background: var(--red); color: #fff; }
+  .banner.info { background: var(--green); color: #fff; }
 
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(43,26,20,.45);
+    position: fixed; inset: 0; background: rgba(21,17,13,.55);
     display: none; align-items: flex-start; justify-content: center;
     padding: 40px 16px; overflow-y: auto; z-index: 50;
   }
   .modal-bg.show { display: flex; }
   .modal {
-    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    width: 100%; max-width: 520px; padding: 24px;
+    background: var(--cream); border: 5px solid var(--line); border-radius: 22px;
+    box-shadow: 10px 10px 0 var(--ink);
+    width: 100%; max-width: 540px; padding: 26px;
   }
-  .modal h2 { margin: 0 0 16px; font-size: 19px; }
+  .modal h2 {
+    font-family: "Archivo Black", sans-serif;
+    margin: 0 0 18px; font-size: 26px; text-transform: uppercase;
+    color: var(--red); text-shadow: 2px 2px 0 var(--line); transform: rotate(-1deg);
+  }
 
-  @media (max-width: 480px) {
+  @media (max-width: 520px) {
     .row { flex-direction: column; gap: 0; }
-    h1 { font-size: 22px; }
+    header.app { flex-direction: column; align-items: flex-start; }
+    .btn-add { align-self: stretch; text-align: center; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="sticker-field" id="stickerField" aria-hidden="true"></div>
+
   <header class="app">
     <div class="title">
-      <span class="glass">🍅</span>
+      <span class="glass wobble">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 14h24l-3 22a3 3 0 0 1-3 2.6H18A3 3 0 0 1 15 36L12 14Z" fill="#ec1c24" stroke="#15110d" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M12 14h24l-1 7H13l-1-7Z" fill="#b4121a" stroke="#15110d" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M30 13c0-6 4-9 8-10" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+          <path d="M33 7l5-4M35 11l6-2" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="20" cy="30" r="2" fill="#ffd400" stroke="#15110d" stroke-width="1.5"/>
+          <circle cx="26" cy="26" r="1.6" fill="#ffd400" stroke="#15110d" stroke-width="1.5"/>
+        </svg>
+      </span>
       <div>
-        <h1>Bloody Mary Recipe Box</h1>
-        <p class="subtitle">Our shared collection &amp; rankings</p>
+        <h1>Bloody Mary<br>Recipe Box</h1>
+        <span class="subtitle">Our shared stash &amp; rankings</span>
       </div>
     </div>
-    <button class="btn-primary" id="addBtn">+ Add recipe</button>
+    <button class="btn-add" id="addBtn">+ Add recipe</button>
   </header>
 
   <div class="banner err" id="errBanner"></div>
   <div class="banner info" id="infoBanner"></div>
 
   <div class="toolbar">
-    <label for="sort">Sort by</label>
+    <label for="sort">Sort</label>
     <select id="sort">
       <option value="rating">Highest rated</option>
       <option value="name">Name (A–Z)</option>
@@ -208,12 +341,13 @@
 /* ============================================================
    CONFIG — paste your two Supabase values here (see SETUP.md)
    ============================================================ */
-const SUPABASE_URL = "https://zbwydzxeadxjlzpjntpu.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_6oLX612RoEj_T9o5keYEDw_HOrKc8fh";
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL_HERE";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
 /* ============================================================ */
 
 const TABLE = "recipes";
-const apiBase = () => `${SUPABASE_URL}/rest/v1/${TABLE}`;
+const cleanUrl = () => SUPABASE_URL.trim().replace(/\/+$/, "");
+const apiBase = () => `${cleanUrl()}/rest/v1/${TABLE}`;
 const headers = () => ({
   "apikey": SUPABASE_ANON_KEY,
   "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
@@ -266,11 +400,59 @@ async function loadRecipes(){
 
 /* ---------- Rendering ---------- */
 const SPICE_STYLE = {
-  Mild:    "background:#eaf3de;color:#27500a",
-  Medium:  "background:#faeeda;color:#633806",
-  Hot:     "background:#faece7;color:#712b13",
-  Inferno: "background:#fcebeb;color:#791f1f"
+  Mild:    "background:#bff0c8;color:#0f5132",
+  Medium:  "background:#ffd400;color:#5c4400",
+  Hot:     "background:#ff7a18;color:#5c2700",
+  Inferno: "background:#ec1c24;color:#fff"
 };
+function spiceIcon(level){
+  const n = {Mild:1, Medium:2, Hot:3, Inferno:4}[level] || 0;
+  return "🌶".repeat(n);
+}
+
+const GLASS_SVG = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 14h24l-3 22a3 3 0 0 1-3 2.6H18A3 3 0 0 1 15 36L12 14Z" fill="#ec1c24" stroke="#15110d" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M12 14h24l-1 7H13l-1-7Z" fill="#b4121a" stroke="#15110d" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M30 13c0-6 4-9 8-10" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+  <path d="M33 7l5-4M35 11l6-2" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="20" cy="30" r="2" fill="#ffd400" stroke="#15110d" stroke-width="1.5"/>
+  <circle cx="26" cy="26" r="1.6" fill="#ffd400" stroke="#15110d" stroke-width="1.5"/>
+</svg>`;
+
+/* little corner stickers stuck onto each card, cycled by index */
+const ACCENTS = [
+  `<svg class="card-accent" viewBox="0 0 40 40"><path d="M20 2l4.5 11.5L36 14l-9 8 3 13-10-7-10 7 3-13-9-8 11.5-.5L20 2Z" fill="#ffd400" stroke="#15110d" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+  `<svg class="card-accent" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="#1d4ed8" stroke="#15110d" stroke-width="2.2"/><text x="20" y="26" font-family="Archivo Black,sans-serif" font-size="15" fill="#fff" text-anchor="middle">!</text></svg>`,
+  `<svg class="card-accent" viewBox="0 0 44 40"><path d="M4 20c4-8 8 8 12 0s8 8 12 0 8 8 12 0" fill="none" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/></svg>`,
+  `<svg class="card-accent" viewBox="0 0 40 40"><path d="M20 3c3 6 14 4 14 13 0 6-6 9-6 14 0 4 2 7 2 7H10s2-3 2-7c0-5-6-8-6-14 0-9 11-7 14-13Z" fill="#ff5ca8" stroke="#15110d" stroke-width="2.2" stroke-linejoin="round"/></svg>`
+];
+function cardAccent(i){ return ACCENTS[i % ACCENTS.length]; }
+
+/* scatter loud stickers across the page background */
+function scatterStickers(){
+  const field = $("stickerField");
+  if (!field) return;
+  const shapes = [
+    `<svg width="70" height="70" viewBox="0 0 40 40"><path d="M20 2l4.5 11.5L36 14l-9 8 3 13-10-7-10 7 3-13-9-8 11.5-.5L20 2Z" fill="#ffd400" stroke="#15110d" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+    `<svg width="64" height="64" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="#1d4ed8" stroke="#15110d" stroke-width="2.4"/></svg>`,
+    `<svg width="80" height="40" viewBox="0 0 60 30"><path d="M3 15c5-11 10 11 15 0s10 11 15 0 10 11 15 0" fill="none" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/></svg>`,
+    `<svg width="62" height="62" viewBox="0 0 40 40"><path d="M20 4c2 6 14 2 13 9-1 6-9 4-7 11 1 5-8 7-10 2-2 5-12 1-9-5 3-6-6-6-4-12 2-5 11 0 12-7 .5-3 4-3 5-2Z" fill="#ec1c24" stroke="#15110d" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+    `<svg width="58" height="58" viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" rx="4" fill="#ff5ca8" stroke="#15110d" stroke-width="2.4" transform="rotate(12 20 20)"/></svg>`,
+    `<svg width="60" height="60" viewBox="0 0 48 48">${GLASS_SVG.replace('<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">','').replace('</svg>','')}</svg>`
+  ];
+  const positions = [
+    [4, 88], [88, 6], [92, 70], [2, 40], [80, 38], [50, 95], [14, 64], [70, 90]
+  ];
+  let html = "";
+  positions.forEach((p, i) => {
+    const s = shapes[i % shapes.length];
+    const rot = (Math.random()*50 - 25).toFixed(1);
+    const op = 0.5 + Math.random()*0.25;
+    html += `<span style="left:${p[0]}%; top:${p[1]}%; transform:rotate(${rot}deg); opacity:${op.toFixed(2)}">${s}</span>`;
+  });
+  field.innerHTML = html;
+}
+
 
 function starsHTML(n, id){
   let h = "";
@@ -300,20 +482,22 @@ function render(){
 
   const list = $("list");
   if (recipes.length===0){
-    list.innerHTML = `<div class="empty"><div class="big">🍸</div><p>No recipes yet.<br>Add your first one to get started.</p></div>`;
+    list.innerHTML = `<div class="empty"><div class="big">${GLASS_SVG}</div><p>No recipes yet —<br>add your first one!</p></div>`;
     return;
   }
   if (view.length===0){
-    list.innerHTML = `<div class="empty"><p>No recipes match “${esc(q)}”.</p></div>`;
+    list.innerHTML = `<div class="empty"><div class="big">${GLASS_SVG}</div><p>Nothing matches “${esc(q)}”</p></div>`;
     return;
   }
 
-  list.innerHTML = view.map(r => {
+  list.innerHTML = view.map((r, idx) => {
     const ing = (r.ingredients||"").split("\n").map(s=>s.trim()).filter(Boolean);
     const ingHTML = ing.length ? `<div class="sec-label">Ingredients</div><ul>${ing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
     const notesHTML = r.notes ? `<div class="sec-label">Notes</div><p class="notes">${esc(r.notes)}</p>` : "";
-    const spice = r.spice ? `<span class="tag" style="${SPICE_STYLE[r.spice]||''}">🌶 ${esc(r.spice)}</span>` : "";
-    return `<div class="card">
+    const spice = r.spice ? `<span class="tag" style="${SPICE_STYLE[r.spice]||''}">${spiceIcon(r.spice)} ${esc(r.spice)}</span>` : "";
+    const tilt = [-1.4, 0.8, -0.7, 1.3, -1.1][idx % 5];
+    return `<div class="card" style="transform:rotate(${tilt}deg)">
+      ${cardAccent(idx)}
       <div class="card-head">
         <div>
           <p class="card-name">${esc(r.name||"Untitled")}</p>
@@ -325,7 +509,7 @@ function render(){
       ${ingHTML}${notesHTML}
       <div class="card-foot">
         <button class="btn-ghost" data-edit="${r.id}">✎ Edit</button>
-        <button class="btn-ghost btn-danger-text" data-del="${r.id}">🗑 Delete</button>
+        <button class="btn-del" data-del="${r.id}">✕ Delete</button>
       </div>
     </div>`;
   }).join("");
@@ -430,6 +614,7 @@ $("modalBg").onclick = (e) => { if (e.target === $("modalBg")) closeModal(); };
 document.addEventListener("keydown", (e) => { if (e.key==="Escape") closeModal(); });
 
 renderFormStars();
+scatterStickers();
 loadRecipes();
 </script>
 </body>
