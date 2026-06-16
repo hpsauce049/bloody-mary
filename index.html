@@ -944,7 +944,7 @@ function renderBlog(){
   const view = $("blogView");
   const newBtn = `<div style="display:flex;justify-content:space-between;align-items:center;max-width:720px;margin:0 auto 8px"><h2 style="font-family:'Archivo Black',sans-serif;margin:0">Blog</h2><button class="btn-primary" onclick="openPostEditor()">+ New post</button></div>`;
   if (!posts.length){
-    view.innerHTML = newBtn + `<div class="blog-list"><div class="empty"><p>No posts yet — write the first one.</p></div></div>`;
+    view.innerHTML = newBtn + `<div class="blog-list"><div class="empty"><p>No posts yet.</p></div></div>`;
     return;
   }
   view.innerHTML = newBtn + `<div class="blog-list">${posts.map(p => `
@@ -1041,7 +1041,6 @@ function renderAbout(){
     <div class="about">
       <h2>Bloody h*ck</h2>
       <p>A site about Bloody Marys.</p>
-      <p style="color:var(--faint)">Edit this text anytime in <code>index.html</code> — look for <code>renderAbout</code>.</p>
     </div>`;
 }
 
