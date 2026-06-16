@@ -304,7 +304,7 @@
       <a class="navlink" id="navRecipes" href="#/">The good stuff</a>
       <a class="navlink" id="navGallery" href="#/gallery">Visual evidence</a>
       <a class="navlink" id="navBlog" href="#/blog">Written evidence</a>
-      <a class="navlink" id="navAbout" href="#/about">The point</a>
+      <a class="navlink" id="navAbout" href="#/about">About</a>
       <button class="navlink" id="pantryBtn">What can I make?</button>
       <button class="navlink" id="tagsBtn">Tags</button>
       <button class="navlink" id="accountBtn">Account</button>
@@ -463,7 +463,7 @@
 <div class="modal-bg" id="pantryModalBg">
   <div class="modal wide">
     <h2>What can I make?</h2>
-    <p class="muted" style="margin-top:-8px">Tick the ingredients you have. We'll find recipes you can make, or are only 1–2 short of. Your pantry is saved to your account.</p>
+    <p class="muted" style="margin-top:-8px">Tick the ingredients you have. Your pantry is saved to your account.</p>
     <input type="search" id="pantrySearch" placeholder="Filter ingredients…" style="margin:14px 0" />
     <div id="pantryPicker" style="display:flex;flex-wrap:wrap;gap:8px;max-height:200px;overflow-y:auto;padding:4px"></div>
     <div style="border-top:3px dashed var(--line);margin:18px 0 0;padding-top:16px">
@@ -1040,7 +1040,8 @@ function renderAbout(){
   $("aboutView").innerHTML = `
     <div class="about">
       <h2>Bloody h*ck</h2>
-      <p>This is the Farrow Bloody Mary compendium.</p>
+      <p>A site about Bloody Marys.</p>
+      <p style="color:var(--faint)">Edit this text anytime in <code>index.html</code> — look for <code>renderAbout</code>.</p>
     </div>`;
 }
 
@@ -1285,23 +1286,41 @@ async function togglePantry(ing){
 function renderPantryResults(){
   const box = $("pantryResults");
   if (!pantry.length){ box.innerHTML = `<p class="muted">Tick some ingredients to see what you can make.</p>`; return; }
+
   const scored = recipes.map(r => {
     const {missing, extra, need} = matchAgainst(r, pantry);
-    return { r, missing: missing.length, extra: extra.length, need: need.length, missingList: missing };
-  }).filter(x => x.need > 0 && x.missing <= 2)   // can make, or missing only 1–2
-    .sort((a,b) => a.missing - b.missing || a.extra - b.extra || (b.r.rating||0)-(a.r.rating||0));
+    const have = need.length - missing.length;          // how many of the recipe's ingredients you have
+    return { r, missing: missing.length, have, total: need.length, extra: extra.length, missingList: missing };
+  }).filter(x => x.total > 0 && x.have > 0)               // show anything you have at least one ingredient for
+    .sort((a,b) =>
+      a.missing - b.missing ||                            // closest to complete first
+      (b.have/b.total) - (a.have/a.total) ||              // then proportionally closest
+      (b.r.rating||0) - (a.r.rating||0));
 
-  if (!scored.length){ box.innerHTML = `<p class="muted">No recipes within reach yet — tick more ingredients, or you're missing more than 2 for everything.</p>`; return; }
+  if (!scored.length){ box.innerHTML = `<p class="muted">None of your recipes use the ingredients you've ticked yet. Tick a few more, or add recipes that use them.</p>`; return; }
 
-  box.innerHTML = scored.slice(0,12).map(x => {
+  // split into "can make now" and "almost there" for clarity
+  const canMake = scored.filter(x => x.missing===0);
+  const close   = scored.filter(x => x.missing>0);
+
+  const cardFor = (x) => {
     const badge = x.missing===0
-      ? `<span class="meta-pill" style="background:#f1f8f2;color:#256b30;border-color:#c8e4cc">✓ You can make this!</span>`
-      : `<span class="meta-pill" style="background:#fafafa">Missing ${x.missing}: ${x.missingList.map(esc).join(", ")}</span>`;
+      ? `<span class="meta-pill" style="background:#f1f8f2;color:#256b30;border-color:#c8e4cc">✓ You can make this</span>`
+      : `<span class="meta-pill" style="background:#fafafa">Have ${x.have}/${x.total} · missing ${x.missingList.map(esc).join(", ")}</span>`;
     return `<button class="related-card" style="width:100%;margin-bottom:10px" onclick="closePantry();location.hash='#/recipe/${x.r.id}'">
       <p class="rc-name">${esc(x.r.name)}</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${scoreBadge(x.r.rating)} ${badge}</div>
     </button>`;
-  }).join("");
+  };
+
+  let html = "";
+  if (canMake.length){
+    html += `<p class="sec-label" style="margin-top:0">Ready to make (${canMake.length})</p>` + canMake.map(cardFor).join("");
+  }
+  if (close.length){
+    html += `<p class="sec-label">Almost there</p>` + close.slice(0, 12).map(cardFor).join("");
+  }
+  box.innerHTML = html;
 }
 
 async function clearPantry(){
